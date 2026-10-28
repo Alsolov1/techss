@@ -164,6 +164,37 @@
       });
     }
 
+    // Match column names regardless of capitalization, spaces, or accents.
+    function getRowValue(row, names, fallback = '') {
+      if (!row || typeof row !== 'object') return fallback;
+      const normalizeKey = value => String(value).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+      const wanted = names.map(normalizeKey);
+      const key = Object.keys(row).find(candidate => wanted.includes(normalizeKey(candidate)));
+      if (key === undefined || row[key] == null) return fallback;
+      const value = row[key];
+      if (typeof value === 'string' || typeof value === 'number') return String(value).trim();
+      if (typeof value === 'object') return String(value.url || value.href || value.link || value.text || '').trim();
+      return fallback;
+    }
+
+    // Convert common Google Drive share links into an image URL.
+    function normalizeImageUrl(value) {
+      let url = String(value || '').trim().replace(/^['"]|['"]$/g, '').trim();
+      if (!url) return '';
+      const patterns = [
+        /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+        /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+        /drive\.google\.com\/uc\?(?:[^#]*?&)?id=([a-zA-Z0-9_-]+)/,
+        /docs\.google\.com\/uc\?(?:[^#]*?&)?id=([a-zA-Z0-9_-]+)/
+      ];
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return 'https://drive.google.com/uc?export=view&id=' + encodeURIComponent(match[1]);
+      }
+      if (/^[a-zA-Z0-9_-]{20,}$/.test(url)) return 'https://drive.google.com/uc?export=view&id=' + encodeURIComponent(url);
+      return /^https?:\/\//i.test(url) ? url : '';
+    }
+
     function categoryKey(value) {
       const text = String(value || 'accessoires').trim().toLowerCase();
       const map = {
@@ -194,18 +225,21 @@
       }
 
       available.forEach((row, index) => {
-        const id = String(row.id || ('product-' + (index + 1))).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-        const name = String(row.name || '').trim();
-        const price = Number(String(row.price).replace(/[^\d.,-]/g, '').replace(',', '.'));
-        if (!Number.isFinite(price) || price < 0) return;
+        const id = String(getRowValue(row, ['id', 'product_id', 'product id'], 'product-' + (index + 1))).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+        const name = getRowValue(row, ['name', 'product', 'product_name', 'nom', 'nom du produit']);
+        const rawPrice = getRowValue(row, ['price', 'prix', 'product_price']);
+        const price = Number(String(rawPrice).replace(/[^\d.,-]/g, '').replace(',', '.'));
+        if (!name || !Number.isFinite(price) || price < 0) return;
 
+        const rawImage = getRowValue(row, ['image', 'image_url', 'imageurl', 'photo', 'picture', 'img', 'lien_image', 'url_image', 'image produit', 'product_image', 'photo_url']);
+        const rawStock = getRowValue(row, ['stock', 'quantity', 'quantite', 'quantité']);
         products[id] = {
           name,
           price,
-          image: String(row.image || '').trim(),
-          category: categoryKey(row.category),
-          description: String(row.description || '').trim(),
-          stock: row.stock === undefined || row.stock === '' ? '' : Number(row.stock)
+          image: normalizeImageUrl(rawImage),
+          category: categoryKey(getRowValue(row, ['category', 'categorie', 'catégorie', 'type'], 'accessoires')),
+          description: getRowValue(row, ['description', 'details', 'détails', 'detail']),
+          stock: rawStock === '' ? '' : Number(rawStock)
         };
 
         const product = products[id];
@@ -220,8 +254,16 @@
         img.loading = 'lazy';
         img.className = 'h-full w-full object-cover';
         img.alt = name;
-        img.src = product.image || 'https://placehold.co/600x675?text=TechStore';
-        img.onerror = () => { img.onerror = null; img.src = 'https://placehold.co/600x675?text=TechStore'; };
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        const fallbackImage = 'https://placehold.co/600x675?text=TechStore';
+        img.src = product.image || fallbackImage;
+        img.onerror = () => {
+          if (img.src !== fallbackImage) {
+            img.onerror = null;
+            img.src = fallbackImage;
+          }
+        };
         photo.appendChild(img);
 
         const details = document.createElement('div');
