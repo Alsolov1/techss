@@ -1472,3 +1472,39 @@ footer{background:#160f17!important;border-color:var(--ts-line)!important}
 </style>
 
 </body></html>
+
+<style id="mobile-layout-refinement">
+/* Mobile-only layout: keep hero copy readable and place the animated controller below it. */
+@media (max-width: 767px) {
+  .tech-hero { min-height: 735px !important; }
+  .tech-hero > .relative.z-10 {
+    min-height: 735px !important;
+    align-items: flex-start !important;
+    padding: 54px 22px 285px !important;
+  }
+  .tech-hero > .relative.z-10 > div { width: 100% !important; max-width: 100% !important; }
+  .tech-hero [data-template-id="hero-eyebrow"] { font-size: 10px !important; letter-spacing: .13em !important; margin-bottom: 16px !important; }
+  .tech-hero [data-template-id="hero-title"] { font-size: clamp(31px, 8.5vw, 43px) !important; line-height: 1.12 !important; letter-spacing: -.035em !important; margin-bottom: 15px !important; }
+  .tech-hero [data-template-id="hero-description"] { font-size: 14px !important; line-height: 1.7 !important; margin-bottom: 20px !important; max-width: 100% !important; }
+  .tech-hero > .relative.z-10 a { min-height: 46px; padding: 12px 20px !important; font-size: 14px !important; }
+  .gaming-device-scene {
+    top: auto !important; right: 50% !important; bottom: 7px !important;
+    width: min(94%, 430px) !important; height: 255px !important;
+    transform: translateX(50%) !important; perspective: 700px;
+  }
+  .gaming-controller { width: 100% !important; max-width: 390px !important; }
+  .gaming-controller svg { width: 100% !important; height: auto !important; }
+  .device-orbit { width: 82%; height: 57%; }
+  .orbit-two { width: 94%; height: 69%; }
+  .device-caption { bottom: 0 !important; right: 50% !important; transform: translateX(50%); white-space: nowrap; font-size: 9px !important; padding: 7px 12px !important; }
+  .spark-one { top: 8%; right: 8%; }
+  .spark-two { bottom: 24%; left: 4%; }
+  .spark-three { top: 20%; left: 7%; }
+}
+@media (max-width: 380px) {
+  .tech-hero, .tech-hero > .relative.z-10 { min-height: 710px !important; }
+  .tech-hero > .relative.z-10 { padding-left: 18px !important; padding-right: 18px !important; padding-bottom: 265px !important; }
+  .gaming-device-scene { height: 235px !important; width: 98% !important; }
+  .tech-hero [data-template-id="hero-title"] { font-size: 30px !important; }
+}
+</style>
