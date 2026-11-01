@@ -1609,4 +1609,64 @@ footer{background:#160f17!important;border-color:var(--ts-line)!important}
 }
 </style>
 
+
+<style id="techstore-mobile-controller-layout-fix">
+/* Mobile: keep the copy and CTA first, then place the controller in its own row. */
+@media (max-width: 767px) {
+  .tech-hero {
+    display: flex !important; flex-direction: column !important;
+    min-height: 0 !important; height: auto !important;
+    overflow: hidden !important; padding: 0 !important;
+  }
+  .tech-hero > .tech-hero-glow { position: absolute !important; }
+  .tech-hero > .relative.z-10 {
+    order: 1 !important; position: relative !important; z-index: 4 !important;
+    display: block !important; width: 100% !important; max-width: 100% !important;
+    min-height: 0 !important; height: auto !important;
+    padding: 34px 20px 0 !important; margin: 0 !important;
+  }
+  .tech-hero > .relative.z-10 > div {
+    position: relative !important; z-index: 4 !important;
+    width: 100% !important; max-width: 100% !important;
+  }
+  .tech-hero [data-template-id="hero-eyebrow"],
+  .tech-hero [data-template-id="hero-title"],
+  .tech-hero [data-template-id="hero-description"],
+  .tech-hero > .relative.z-10 a {
+    position: relative !important; z-index: 4 !important;
+  }
+  .tech-hero [data-template-id="hero-title"] {
+    max-width: 100% !important; font-size: clamp(31px, 8.6vw, 40px) !important;
+    line-height: 1.14 !important; margin-bottom: 14px !important;
+  }
+  .tech-hero [data-template-id="hero-description"] {
+    max-width: 100% !important; font-size: 13px !important;
+    line-height: 1.65 !important; margin-bottom: 19px !important;
+  }
+  .gaming-device-scene {
+    order: 2 !important; position: relative !important;
+    inset: auto !important; transform: none !important;
+    display: grid !important; place-items: center !important;
+    width: min(100%, 420px) !important; height: 205px !important;
+    margin: 2px auto 0 !important; padding: 0 8px !important;
+    opacity: 1 !important; overflow: visible !important;
+  }
+  .gaming-controller {
+    width: 94% !important; max-width: 350px !important;
+    margin: 0 auto !important;
+  }
+  .gaming-controller svg {
+    display: block !important; width: 100% !important;
+    height: auto !important; max-height: 205px !important;
+  }
+  .device-caption { display: none !important; }
+}
+@media (max-width: 380px) {
+  .tech-hero > .relative.z-10 { padding: 29px 16px 0 !important; }
+  .gaming-device-scene { height: 180px !important; margin-top: 0 !important; }
+  .gaming-controller { max-width: 315px !important; }
+  .gaming-controller svg { max-height: 180px !important; }
+}
+</style>
+
 </body></html>
